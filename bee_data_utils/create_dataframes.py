@@ -1,4 +1,4 @@
-git remote add origin https://github.com/eloigabal/edinet_data_collector.git# coding=utf-8
+# coding=utf-8
 
 """
 author: Eloi Gabaldon
