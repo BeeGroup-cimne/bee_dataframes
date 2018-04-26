@@ -91,7 +91,7 @@ def create_daily_dataframe(grouped, multiplier):
             if freq > day_delta:  # monthly data
                 # si no existeix algun valor instantani al device ho considero accumulated
                 if group_new.value.isnull().all():
-                    if df_new_monthly:
+                    if df_new_monthly is not None:
                         # paso el consum a diari per sumar
                         df_new_monthly = df_new_monthly + pd.DataFrame(group_new.accumulated * multiplier[name]).\
                             resample(str(freq_month)+'T').interpolate().diff(1, 0).\
@@ -102,7 +102,7 @@ def create_daily_dataframe(grouped, multiplier):
                             rename(columns={'accumulated': 'value'})
                 else:
                     df_daily = daily_data(pd.DataFrame(group_new.value * multiplier[name]))
-                    if df_new_monthly:
+                    if df_new_monthly is not None:
                         # paso el consum a diari per sumar
                         df_new_monthly = df_new_monthly + df_daily
                     else:
@@ -112,7 +112,7 @@ def create_daily_dataframe(grouped, multiplier):
                     df_0 = pd.DataFrame(group_new.accumulated * multiplier[name]).resample(str(freq_month)+'T').max().\
                         interpolate().diff().rename(columns={'accumulated': 'value'}).clip_lower(0)
                     sign = abs(multiplier[name])/multiplier[name] if multiplier[name] != 0 else 0
-                    if df_new_hourly:
+                    if df_new_hourly is not None:
                         df_new_hourly = df_new_hourly + df_0 * sign
                         # df_new_hourly = df_new_hourly + pd.DataFrame(group_new.accumulated * multiplier[name]).\
                         # diff(1,0).resample(str(frequ)+'T').sum().rename(columns={'accumulated':'value'}).\
@@ -122,7 +122,7 @@ def create_daily_dataframe(grouped, multiplier):
                 else:
                     df_daily = pd.DataFrame(group_new.value * multiplier[name])
                     df_daily = df_daily.groupby(pd.Grouper(freq=str(freq_month)+'T')).sum()
-                    if df_new_hourly:
+                    if df_new_hourly is not None:
                         df_new_hourly = df_new_hourly + df_daily
                     else:
                         df_new_hourly = df_daily
