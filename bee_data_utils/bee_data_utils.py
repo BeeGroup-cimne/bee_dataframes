@@ -84,7 +84,7 @@ class BeeDataConnection(object):
 
     def obtain_daily_dataset(self, modelling_unit_id):
         # get the modelling unit
-        modelling_unit = self.mongo_query_find_one('modelling_units', {'modellingUnitId': modelling_unit_id})
+        modelling_unit = self.mongo_query_find_one('modelling_units', {'modellingUnitId': modelling_unit_id, "﻿companyId": 1092915978})
         # get consumption dataframe
         mongo_consumption, multiplier = self.get_mongo_consumption(modelling_unit)
         consumption_dataframe = create_daily_dataframe(mongo_consumption.groupby('deviceid'), multiplier)
