@@ -45,6 +45,8 @@ def create_hourly_dataframe(grouped, multiplier, model):
         frequ = 60
     df_new = None
     for name, group in grouped:
+        if name not in multiplier.keys:
+            continue
         energy_type_grouped = group.groupby('energyType')
         for energy_type, energy_type_group in energy_type_grouped:
             group_new = energy_type_group.reset_index().drop_duplicates(subset='date', keep='last').set_index('date')
@@ -79,6 +81,8 @@ def create_daily_dataframe(grouped, multiplier):
     df_new_monthly = None
     df_new_hourly = None
     for name, group in grouped:
+        if name not in multiplier.keys:
+            continue
         # If the model is monthly, we need to convert the tertiary energy types to daily by dividing and the hourly
         # energy to daily by adding. We will identify the monthly energy type by the frquency of the timestamps.
         energy_type_grouped = group.groupby('energyType')
