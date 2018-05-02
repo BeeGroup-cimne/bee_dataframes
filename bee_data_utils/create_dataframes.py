@@ -45,7 +45,7 @@ def create_hourly_dataframe(grouped, multiplier, model):
         frequ = 60
     df_new = None
     for name, group in grouped:
-        if name not in multiplier.keys:
+        if name not in multiplier.keys():
             continue
         energy_type_grouped = group.groupby('energyType')
         for energy_type, energy_type_group in energy_type_grouped:
