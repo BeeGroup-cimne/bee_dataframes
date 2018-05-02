@@ -81,7 +81,7 @@ def create_daily_dataframe(grouped, multiplier):
     df_new_monthly = None
     df_new_hourly = None
     for name, group in grouped:
-        if name not in multiplier.keys:
+        if name not in multiplier.keys():
             continue
         # If the model is monthly, we need to convert the tertiary energy types to daily by dividing and the hourly
         # energy to daily by adding. We will identify the monthly energy type by the frquency of the timestamps.
