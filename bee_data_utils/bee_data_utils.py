@@ -77,7 +77,8 @@ class BeeDataConnection(object):
         # get consumption dataframe
         mongo_consumption, multiplier = self.get_mongo_consumption(modelling_unit)
         consumption_dataframe = create_hourly_dataframe(mongo_consumption.groupby('deviceid'),
-                                                        multiplier, modelling_unit['baseline']['model'])
+                                                        multiplier, modelling_unit['baseline']['model'] if 'model' in
+                                                        modelling_unit['baseline'] else 'Weekly30Min')
         consumption_dataframe = consumption_dataframe.sort_index()
         return consumption_dataframe
 
