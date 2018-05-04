@@ -95,7 +95,20 @@ class BeeDataConnection(object):
 
     def obtain_daily_dataset_file(self, file_passed, modelling_unit_id):
         modelling_unit = self.mongo_query_find_one('modelling_units', {'modellingUnitId': modelling_unit_id, "companyId": 1092915978})
-        mongo_consumption, multiplier = self.get_mongo_consumption(modelling_unit)
+        multiplier = {x['deviceId']: x['multiplier'] for x in modelling_unit['devices']}
+        def parse_time(datetime_s):
+            return datetime.datetime.fromtimestamp(float(datetime_s))
+        mongo_consumption = pd.read_csv(file_passed, sep='\t', names=["deviceid", "date", "value",
+                                                                      "accumulated", "energyType"],
+                                        parse_dates=['date'], date_parser= parse_time)
+        consumption_dataframe = create_daily_dataframe(mongo_consumption.groupby('deviceid'), multiplier)
+        consumption_dataframe = consumption_dataframe.sort_index()
+        return consumption_dataframe
+
+
+    def obtain_daily_dataset_file(self, file_passed, modelling_unit_id):
+        modelling_unit = self.mongo_query_find_one('modelling_units', {'modellingUnitId': modelling_unit_id, "companyId": 1092915978})
+        multiplier = {x['deviceId']: x['multiplier'] for x in modelling_unit['devices']}
         def parse_time(datetime_s):
             return datetime.datetime.fromtimestamp(float(datetime_s))
         mongo_consumption = pd.read_csv(file_passed, sep='\t', names=["deviceid", "date", "value",

@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 from datetime import timedelta
 from dateutil.relativedelta import relativedelta
-
+import bee_data_cleaning as dc
 
 def calculate_frequency(dataset):
     if len(dataset.index) > 1:
@@ -41,8 +41,10 @@ def daily_data(df):
 def create_hourly_dataframe(grouped, multiplier, model):
     if model == 'Weekly30Min':
         frequ = 30
+        window = 1440
     else:
         frequ = 60
+        window = 720
     df_new = None
     for name, group in grouped:
         if name not in multiplier.keys():
@@ -50,6 +52,7 @@ def create_hourly_dataframe(grouped, multiplier, model):
         energy_type_grouped = group.groupby('energyType')
         for energy_type, energy_type_group in energy_type_grouped:
             group_new = energy_type_group.reset_index().drop_duplicates(subset='date', keep='last').set_index('date')
+            group_new = group_new.sort_index()
             freq = calculate_frequency(group_new)
             if not freq:
                 continue
@@ -73,6 +76,13 @@ def create_hourly_dataframe(grouped, multiplier, model):
                             resample(str(frequ)+'T').sum()
                     else:
                         df_new = pd.DataFrame(group_new.value * multiplier[name]).resample(str(frequ)+'T').sum()
+    if df_new:
+        outliers = dc.detect_min_threshold_outliers(df_new['value'], 0)
+        df_new['value'] = dc.clean_series(df_new['value'], outliers)
+        outliers = dc.detect_max_threshold_outliers(df_new['value'], 100000)
+        df_new['value'] = dc.clean_series(df_new['value'], outliers)
+        outliers = dc.detect_znorm_outliers(df_new['value'], 30, mode="rolling", window=window)
+        df_new['value'] = dc.clean_series(df_new['value'], outliers)
     return df_new
 
 
@@ -88,6 +98,7 @@ def create_daily_dataframe(grouped, multiplier):
         energy_type_grouped = group.groupby('energyType')
         for energy_type, energy_type_group in energy_type_grouped:
             group_new = energy_type_group.reset_index().drop_duplicates(subset='date', keep='last').set_index('date')
+            group_new = group_new.sort_index()
             freq = calculate_frequency(group_new)
             if not freq:
                 continue
@@ -141,4 +152,9 @@ def create_daily_dataframe(grouped, multiplier):
         df_new = df_new_hourly
     else:
         df_new = pd.DataFrame({'date': []})
+    if not df_new.empty:
+        outliers = dc.detect_min_threshold_outliers(df_new['value'], 0)
+        df_new['value'] = dc.clean_series(df_new['value'], outliers)
+        outliers = dc.detect_znorm_outliers(df_new['value'], 30, mode="rolling", window=12)
+        df_new['value'] = dc.clean_series(df_new['value'], outliers)
     return df_new

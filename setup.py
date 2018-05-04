@@ -12,6 +12,7 @@ setup(
         'pandas',
         'numpy',
         'pymongo',
+        'bee_data_cleaning'
     ],
     description='Utilities to obtain data from beedata mongo.',
     test_suite='nose.collector',
