@@ -76,7 +76,7 @@ def create_hourly_dataframe(grouped, multiplier, model):
                             resample(str(frequ)+'T').sum()
                     else:
                         df_new = pd.DataFrame(group_new.value * multiplier[name]).resample(str(frequ)+'T').sum()
-    if df_new:
+    if df_new is not None:
         outliers = dc.detect_min_threshold_outliers(df_new['value'], 0)
         df_new['value'] = dc.clean_series(df_new['value'], outliers)
         outliers = dc.detect_max_threshold_outliers(df_new['value'], 100000)
