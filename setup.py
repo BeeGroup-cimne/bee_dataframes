@@ -4,7 +4,7 @@ setup(
     name='bee_dataframes',
     version='0.0.1',
     packages=find_packages(),
-    url='https://github.com/BeeGroup-cimne/bee_data_cleaning',
+    url='',
     license='MIT',
     author='BEE Group - CIMNE',
     author_email='egabaldon@cimne.upc.edu',
