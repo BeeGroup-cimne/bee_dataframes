@@ -127,12 +127,12 @@ def create_hourly_dataframe(grouped, multiplier, model):
                         interpolate().diff(1,0).rename(columns={'accumulated': 'value'})
                     df_0.loc[df_0.value < 0] = np.nan  # negative values to nan
                     sign = abs(multiplier[name])/multiplier[name] if multiplier[name] != 0 else 0
-                    if df_new:
+                    if df_new is not None:
                         df_new = df_new + df_0 * sign
                     else:
                         df_new = df_0 * sign
                 else:
-                    if df_new:
+                    if df_new is not None:
                         df_new = df_new + pd.DataFrame(group_new.value * multiplier[name]).\
                             resample(str(frequ)+'T').sum()
                     else:
